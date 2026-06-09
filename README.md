@@ -27,7 +27,7 @@ https://github.com/Futurae-Technologies/ios-trust-signals-sdk.git
 ```swift
 dependencies: [
     // Pre-release versions require exact pinning:
-    .package(url: "https://github.com/Futurae-Technologies/ios-trust-signals-sdk.git", exact: "0.1.0-alpha")
+    .package(url: "https://github.com/Futurae-Technologies/ios-trust-signals-sdk.git", exact: "0.0.1-alpha")
     // Stable releases can use range-based versioning:
     // .package(url: "https://github.com/Futurae-Technologies/ios-trust-signals-sdk.git", from: "1.0.0")
 ]
@@ -93,13 +93,47 @@ for await collection in await TrustSignalsSDK.collections {
 
 ### 6. Error Handling
 
-Register a handler for errors during scheduled collections:
+`collect()` and `collectAndUpload(...)` throw their errors directly to the
+caller — wrap them in `try`/`catch`. Errors from **scheduled** collections run
+in the background, so they are instead delivered to a registered handler:
 
 ```swift
 await TrustSignalsSDK.registerErrorHandler { accountID, error in
-    print("Collection failed for \(accountID): \(error)")
+    switch error {
+    case is TSAuthenticationError:
+        // Access token expired/rejected (HTTP 401/403).
+        // Obtain a fresh token from your backend, then re-schedule:
+        //
+        // await TrustSignalsSDK.scheduleCollections(
+        //     interval: .seconds(1800),
+        //     accessToken: newToken,
+        //     accountID: accountID
+        // )
+        break
+    default:
+        // Log or report other errors (transport, non-2xx, timeout).
+        print("Collection failed for \(accountID): \(error)")
+    }
 }
 ```
+
+> **Note:** The handler may be invoked off the main thread. Hop to
+> `@MainActor` before touching UI.
+
+#### Error behaviour summary
+
+| Error type | Retry | Where it surfaces |
+|---|---|---|
+| Transport failure — DNS/TLS/timeout (`TSError.submissionTransportFailed`) | No | Thrown from `collectAndUpload(...)`; delivered to handler when scheduled |
+| HTTP 401 / 403 (`TSAuthenticationError`) | No | Thrown from `collectAndUpload(...)`; delivered to handler when scheduled |
+| Other non-2xx HTTP (`TSError.submissionRejected`) | No | Thrown from `collectAndUpload(...)`; delivered to handler when scheduled |
+| Collection timed out with no data (`TSError.collectionTimedOut`) | No | Thrown from `collect()` / `collectAndUpload(...)` |
+| Individual collector failed | No | Not surfaced — that one signal is omitted and the collection still completes (with `timedOut` flagged on partial timeouts) |
+| SDK used before `initialize(_:)` (`TSError.notStarted`) | No | Thrown from the called method |
+
+The SDK performs **no automatic retries** and keeps **no offline queue** — each
+submission is a single attempt. A failed scheduled cycle is reported to the
+handler and the schedule simply continues at the next interval.
 
 ### 7. Stop
 
@@ -119,6 +153,61 @@ The SDK collects signals from multiple sources. Some require permissions declare
 | Nearby Devices | Local Network | `NSLocalNetworkUsageDescription` + `NSBonjourServices` |
 
 Collectors that lack permission gracefully report `permission: false` without affecting other signals.
+
+### Bonjour services
+
+The **Nearby Devices** collector browses for Bonjour service types declared in
+your app's `Info.plist` under `NSBonjourServices`. iOS only allows browsing for
+service types that are explicitly listed — any type not present is silently
+skipped. To match the SDK's full coverage, add the following list:
+
+```xml
+<key>NSBonjourServices</key>
+<array>
+    <string>_smb._tcp.</string>
+    <string>_privet._tcp.</string>
+    <string>_device-info._tcp.</string>
+    <string>_sftp-ssh._tcp.</string>
+    <string>_airplay._tcp.</string>
+    <string>_scanner._tcp.</string>
+    <string>_mediaremotetv._tcp.</string>
+    <string>_rdlink._tcp.</string>
+    <string>_rfb._tcp.</string>
+    <string>_uscan._tcp.</string>
+    <string>_companion-link._tcp.</string>
+    <string>_apple-mobdev2._tcp.</string>
+    <string>_b._dns-sd._udp.</string>
+    <string>_afpovertcp._tcp.</string>
+    <string>_nfs._tcp.</string>
+    <string>_webdav._tcp.</string>
+    <string>_ftp._tcp.</string>
+    <string>_ssh._tcp.</string>
+    <string>_eppc._tcp.</string>
+    <string>_http._tcp.</string>
+    <string>_telnet._tcp.</string>
+    <string>_printer._tcp.</string>
+    <string>_ipp._tcp.</string>
+    <string>_pdl-datastream._tcp.</string>
+    <string>_riousbprint._tcp.</string>
+    <string>_daap._tcp.</string>
+    <string>_dpap._tcp.</string>
+    <string>_ichat._tcp.</string>
+    <string>_presence._tcp.</string>
+    <string>_ica-networking._tcp.</string>
+    <string>_airport._tcp.</string>
+    <string>_xserveraid._tcp.</string>
+    <string>_distcc._tcp.</string>
+    <string>_apple-sasl._tcp.</string>
+    <string>_workstation._tcp.</string>
+    <string>_servermgr._tcp.</string>
+    <string>_raop._tcp.</string>
+    <string>_xcs2p._tcp.</string>
+</array>
+```
+
+By default the SDK browses every type listed here (read from `NSBonjourServices`
+at init). To narrow the set, pass an explicit `bonjourServices:` array to
+`TSConfiguration`.
 
 ## Collected Signals
 
