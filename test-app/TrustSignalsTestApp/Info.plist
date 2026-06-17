@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>TrustSignalsTestApp scans for nearby Bluetooth peripherals to demonstrate the BluetoothScanCollector.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>TrustSignalsTestApp scans for nearby Bluetooth peripherals to demonstrate the BluetoothScanCollector.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_smb._tcp.</string>
+		<string>_privet._tcp.</string>
+		<string>_device-info._tcp.</string>
+		<string>_sftp-ssh._tcp.</string>
+		<string>_airplay._tcp.</string>
+		<string>_scanner._tcp.</string>
+		<string>_mediaremotetv._tcp.</string>
+		<string>_rdlink._tcp.</string>
+		<string>_rfb._tcp.</string>
+		<string>_uscan._tcp.</string>
+		<string>_companion-link._tcp.</string>
+		<string>_apple-mobdev2._tcp.</string>
+		<string>_b._dns-sd._udp.</string>
+		<string>_afpovertcp._tcp.</string>
+		<string>_nfs._tcp.</string>
+		<string>_webdav._tcp.</string>
+		<string>_ftp._tcp.</string>
+		<string>_ssh._tcp.</string>
+		<string>_eppc._tcp.</string>
+		<string>_http._tcp.</string>
+		<string>_telnet._tcp.</string>
+		<string>_printer._tcp.</string>
+		<string>_ipp._tcp.</string>
+		<string>_pdl-datastream._tcp.</string>
+		<string>_riousbprint._tcp.</string>
+		<string>_daap._tcp.</string>
+		<string>_dpap._tcp.</string>
+		<string>_ichat._tcp.</string>
+		<string>_presence._tcp.</string>
+		<string>_ica-networking._tcp.</string>
+		<string>_airport._tcp.</string>
+		<string>_xserveraid._tcp.</string>
+		<string>_distcc._tcp.</string>
+		<string>_apple-sasl._tcp.</string>
+		<string>_workstation._tcp.</string>
+		<string>_servermgr._tcp.</string>
+		<string>_raop._tcp.</string>
+		<string>_xcs2p._tcp.</string>
+	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>TrustSignalsTestApp browses Bonjour services on your local network to enumerate nearby devices.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>TrustSignalsTestApp uses your location even in the background to demonstrate scheduled TrustSignals collection cycles.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>TrustSignalsTestApp uses your location even in the background to demonstrate scheduled TrustSignals collection cycles.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>TrustSignalsTestApp uses your location to demonstrate the LocationCollector.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>TrustSignalsTestApp uses your location while the app is open to demonstrate the LocationCollector and to read the joined Wi-Fi network name.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>TrustSignalsTestApp reads motion activity (walking / stationary / vehicle) for the MotionCollector.</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>fetch</string>
+		<string>processing</string>
+		<string>bluetooth-central</string>
+		<string>remote-notification</string>
+	</array>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.futurae.trustsignals.refresh</string>
+	</array>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+</dict>
+</plist>

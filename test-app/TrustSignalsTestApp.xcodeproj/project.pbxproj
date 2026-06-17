@@ -1,0 +1,299 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0747ADE42FE2AD0C005C5ACA /* TrustSignals in Frameworks */ = {isa = PBXBuildFile; productRef = 0747ADE32FE2AD0C005C5ACA /* TrustSignals */; };
+		0747ADE72FE2BBE6005C5ACA /* TrustSignals in Frameworks */ = {isa = PBXBuildFile; productRef = 0747ADE62FE2BBE6005C5ACA /* TrustSignals */; };
+		B1000001 /* TrustSignalsTestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001 /* TrustSignalsTestApp.swift */; };
+		B1000002 /* CollectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000002 /* CollectionsView.swift */; };
+		B1000003 /* CollectionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000003 /* CollectionDetailView.swift */; };
+		B1000004 /* CollectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000004 /* CollectionStore.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		0747ADE12FE2A684005C5ACA /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1BF1FEC12FA2934800E16EF3 /* TrustSignalsTestApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TrustSignalsTestApp.entitlements; sourceTree = "<group>"; };
+		B2000001 /* TrustSignalsTestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustSignalsTestApp.swift; sourceTree = "<group>"; };
+		B2000002 /* CollectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionsView.swift; sourceTree = "<group>"; };
+		B2000003 /* CollectionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionDetailView.swift; sourceTree = "<group>"; };
+		B2000004 /* CollectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionStore.swift; sourceTree = "<group>"; };
+		B2000005 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B2000010 /* TrustSignalsTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrustSignalsTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B3000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0747ADE42FE2AD0C005C5ACA /* TrustSignals in Frameworks */,
+				0747ADE72FE2BBE6005C5ACA /* TrustSignals in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0747ADD62FE2A187005C5ACA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B4000001 = {
+			isa = PBXGroup;
+			children = (
+				B4000002 /* TrustSignalsTestApp */,
+				0747ADD62FE2A187005C5ACA /* Frameworks */,
+				B4000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B4000002 /* TrustSignalsTestApp */ = {
+			isa = PBXGroup;
+			children = (
+				1BF1FEC12FA2934800E16EF3 /* TrustSignalsTestApp.entitlements */,
+				B2000005 /* Info.plist */,
+				B2000001 /* TrustSignalsTestApp.swift */,
+				B2000002 /* CollectionsView.swift */,
+				B2000003 /* CollectionDetailView.swift */,
+				B2000004 /* CollectionStore.swift */,
+			);
+			path = TrustSignalsTestApp;
+			sourceTree = "<group>";
+		};
+		B4000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B2000010 /* TrustSignalsTestApp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B6000001 /* TrustSignalsTestApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B8000003 /* Build configuration list for PBXNativeTarget "TrustSignalsTestApp" */;
+			buildPhases = (
+				B7000001 /* Sources */,
+				B3000001 /* Frameworks */,
+				0747ADE12FE2A684005C5ACA /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TrustSignalsTestApp;
+			packageProductDependencies = (
+				0747ADE32FE2AD0C005C5ACA /* TrustSignals */,
+				0747ADE62FE2BBE6005C5ACA /* TrustSignals */,
+			);
+			productName = TrustSignalsTestApp;
+			productReference = B2000010 /* TrustSignalsTestApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B9000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = B8000001 /* Build configuration list for PBXProject "TrustSignalsTestApp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B4000001;
+			packageReferences = (
+				0747ADE52FE2BBE6005C5ACA /* XCRemoteSwiftPackageReference "ios-trust-signals-sdk" */,
+			);
+			productRefGroup = B4000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B6000001 /* TrustSignalsTestApp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B7000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B1000001 /* TrustSignalsTestApp.swift in Sources */,
+				B1000002 /* CollectionsView.swift in Sources */,
+				B1000003 /* CollectionDetailView.swift in Sources */,
+				B1000004 /* CollectionStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		BB000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONCE = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BB000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONCE = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BB000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = TrustSignalsTestApp/TrustSignalsTestApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = T82Z6CGNMT;
+				INFOPLIST_FILE = TrustSignalsTestApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.futurae.FuturaeSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BB000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = TrustSignalsTestApp/TrustSignalsTestApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = T82Z6CGNMT;
+				INFOPLIST_FILE = TrustSignalsTestApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.futurae.FuturaeSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B8000001 /* Build configuration list for PBXProject "TrustSignalsTestApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB000001 /* Debug */,
+				BB000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B8000003 /* Build configuration list for PBXNativeTarget "TrustSignalsTestApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB000003 /* Debug */,
+				BB000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0747ADE52FE2BBE6005C5ACA /* XCRemoteSwiftPackageReference "ios-trust-signals-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Futurae-Technologies/ios-trust-signals-sdk";
+			requirement = {
+				kind = exactVersion;
+				version = "0.0.1-alpha";
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0747ADE32FE2AD0C005C5ACA /* TrustSignals */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TrustSignals;
+		};
+		0747ADE62FE2BBE6005C5ACA /* TrustSignals */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0747ADE52FE2BBE6005C5ACA /* XCRemoteSwiftPackageReference "ios-trust-signals-sdk" */;
+			productName = TrustSignals;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = B9000001 /* Project object */;
+}
