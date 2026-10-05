@@ -3,20 +3,29 @@ import TrustSignals
 
 struct CollectionDetailView: View {
     let collection: TSCollection
+    var accountId: String = ""
+    /// The identity fields as this session has them, so the preview shows the body that
+    /// would actually go out.
+    var serviceId: String = ""
+    var unitId: String = ""
+    var interactionId: String = ""
+    var verificationStatus: TSVerificationStatus = .unverified
+
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         List {
             Section("Header") {
-                row("timestamp", "\(collection.timestamp)")
-                row("date", Date(timeIntervalSince1970: TimeInterval(collection.timestamp))
+                row("observationTime", collection.observationTime.formatted(Self.rfc3339))
+                row("date", collection.observationTime
                     .formatted(date: .abbreviated, time: .standard))
-                row("tag", collection.tag)
+                row("sensorTag", collection.sensorTag)
                 row("collectionId", collection.collectionId.uuidString)
             }
 
             Section("observation.wifiScan") {
                 if let wifi = collection.observation.wifiScan {
-                    permissionRow(wifi.permission)
+                    permissionRow(wifi.permissionGranted)
                     if wifi.scanResults.isEmpty {
                         empty("no scan results — iOS does not expose Wi-Fi scan to apps")
                     } else {
@@ -27,7 +36,7 @@ struct CollectionDetailView: View {
 
             Section("observation.bleScan") {
                 if let ble = collection.observation.bleScan {
-                    permissionRow(ble.permission)
+                    permissionRow(ble.permissionGranted)
                     if ble.scanResults.isEmpty {
                         empty("no peripherals discovered")
                     } else {
@@ -36,18 +45,18 @@ struct CollectionDetailView: View {
                 } else { empty("not collected") }
             }
 
-            Section("observation.locationCollection") {
-                if let loc = collection.observation.locationCollection {
+            Section("observation.location") {
+                if let loc = collection.observation.location {
                     row("lat", String(format: "%.6f", loc.lat))
                     row("lon", String(format: "%.6f", loc.lon))
-                    row("timestamp", "\(loc.timestamp)")
+                    row("observationTime", loc.observationTime.formatted(Self.rfc3339))
                 } else { empty("not collected (permission denied or not yet granted)") }
             }
 
             Section("observation.wifiNetwork") {
                 if let net = collection.observation.wifiNetwork {
                     row("name", net.name ?? "—")
-                    row("timestamp", "\(net.timestamp)")
+                    row("observationTime", net.observationTime.formatted(Self.rfc3339))
                     if !net.connectedDevices.isEmpty {
                         ForEach(net.connectedDevices) { device(device: $0) }
                     }
@@ -56,7 +65,7 @@ struct CollectionDetailView: View {
 
             Section("observation.blePeripherals") {
                 if let peri = collection.observation.blePeripherals {
-                    permissionRow(peri.permission)
+                    permissionRow(peri.permissionGranted)
                     if peri.connectedBLEs.isEmpty {
                         empty("no connected peripherals")
                     } else {
@@ -118,14 +127,42 @@ struct CollectionDetailView: View {
                 row("debuggerAttached", collection.deviceInfoSignals.debuggerAttached.map(String.init(describing:)) ?? "—")
             }
 
-            Section("Raw JSON") {
+            Section {
+                Text(wireJSON)
+                    .font(.system(.caption, design: .monospaced))
+                    .textSelection(.enabled)
+            } header: {
+                Text("Wire JSON — POST /api/v1/collections")
+            } footer: {
+                Text("The exact envelope shape uploaded to the backend: a flattened `observation` wrapped with accountId / sdkVersionId plus the four identity fields. Values come from this session.")
+            }
+
+            Section("Raw JSON with collected data from the device") {
+                Button {
+                    UIPasteboard.general.string = prettyJSON
+                } label: {
+                    Label("Copy", systemImage: "doc.on.doc")
+                }
+                .accessibilityIdentifier("copy_json")
                 Text(prettyJSON)
                     .font(.system(.caption, design: .monospaced))
                     .textSelection(.enabled)
+                    .accessibilityIdentifier("raw_json_text")
             }
         }
-        .navigationTitle(Date(timeIntervalSince1970: TimeInterval(collection.timestamp))
+        .navigationTitle(collection.observationTime
             .formatted(date: .omitted, time: .standard))
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                }
+                .accessibilityIdentifier("collection_detail_back")
+            }
+        }
     }
 
     @ViewBuilder
@@ -142,6 +179,7 @@ struct CollectionDetailView: View {
         VStack(alignment: .leading) {
             Text(device.name ?? "—").font(.caption)
             Text(device.address).font(.caption2).monospaced().foregroundStyle(.secondary)
+            Text(device.observationTime.formatted(Self.rfc3339)).font(.caption2).monospaced().foregroundStyle(.secondary)
         }
     }
 
@@ -155,11 +193,14 @@ struct CollectionDetailView: View {
         HStack {
             Image(systemName: granted ? "checkmark.shield.fill" : "lock.shield.fill")
                 .foregroundStyle(granted ? .green : .red)
-            Text(granted ? "permission: true" : "permission: false")
+            Text(granted ? "permissionGranted: true" : "permissionGranted: false")
                 .font(.caption)
                 .foregroundStyle(granted ? .green : .red)
         }
     }
+
+    /// Same format the SDK sends, so the header matches the wire preview.
+    static let rfc3339 = Date.ISO8601FormatStyle(includingFractionalSeconds: true)
 
     private var localizedTimezone: String {
         TimeZone(identifier: collection.observation.timezone)?
@@ -174,5 +215,87 @@ struct CollectionDetailView: View {
             return "<encoding error>"
         }
         return str
+    }
+
+    private var wireJSON: String {
+        WireRequestPreview(
+            collection: collection,
+            accountId: accountId,
+            sdkVersionId: TrustSignalsSDK.version,
+            serviceId: serviceId,
+            unitId: unitId,
+            interactionId: interactionId,
+            verificationStatus: verificationStatus
+        ).json()
+    }
+}
+
+private struct WireRequestPreview: Encodable {
+    let accountId: String
+    let serviceId: String
+    let unitId: String
+    let interactionId: String
+    let verificationStatus: TSVerificationStatus
+    let sdkVersionId: String
+    let observationTime: String
+    let sensorTag: String
+    let timedOut: Bool
+    let observation: WireObservationPreview
+
+    init(
+        collection: TSCollection,
+        accountId: String,
+        sdkVersionId: String,
+        serviceId: String,
+        unitId: String,
+        interactionId: String,
+        verificationStatus: TSVerificationStatus
+    ) {
+        self.accountId = accountId
+        self.serviceId = serviceId
+        self.unitId = unitId
+        self.interactionId = interactionId
+        self.verificationStatus = verificationStatus
+        self.sdkVersionId = sdkVersionId
+        self.observationTime = collection.observationTime.formatted(CollectionDetailView.rfc3339)
+        self.sensorTag = collection.sensorTag
+        self.timedOut = collection.timedOut
+        self.observation = WireObservationPreview(collection.observation, deviceInfoSignals: collection.deviceInfoSignals)
+    }
+
+    func json(prettyPrinted: Bool = true) -> String {
+        let encoder = JSONEncoder()
+        var formatting: JSONEncoder.OutputFormatting = [.sortedKeys, .withoutEscapingSlashes]
+        if prettyPrinted { formatting.insert(.prettyPrinted) }
+        encoder.outputFormatting = formatting
+        guard let data = try? encoder.encode(self),
+              let str = String(data: data, encoding: .utf8) else {
+            return "<encoding error>"
+        }
+        return str
+    }
+}
+
+private struct WireObservationPreview: Encodable {
+    let bleScan: TSBleScan?
+    let blePeripherals: TSBlePeripherals?
+    let nearbyDevices: [TSDevice]
+    let location: TSLocation?
+    let wifiNetwork: TSWifiNetwork?
+    let ip: String?
+    let timezone: String
+    let activeCall: Bool
+    let deviceInfoSignals: TSDeviceInfoSignals
+
+    init(_ observation: TSObservation, deviceInfoSignals: TSDeviceInfoSignals) {
+        self.bleScan = observation.bleScan
+        self.blePeripherals = observation.blePeripherals
+        self.nearbyDevices = observation.nearbyDevices
+        self.location = observation.location
+        self.wifiNetwork = observation.wifiNetwork
+        self.ip = observation.ip
+        self.timezone = observation.timezone
+        self.activeCall = observation.activeCall ?? false
+        self.deviceInfoSignals = deviceInfoSignals
     }
 }

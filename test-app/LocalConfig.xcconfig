@@ -1,0 +1,10 @@
+// Local test-app defaults — gitignored, never commit.
+// Every value is optional: an empty one leaves its launch-screen field blank.
+// In xcconfig "//" starts a comment, so write URLs as https:/$()/host/
+
+TS_BASE_URL = https:/$()/tscollection.public.futurae.dev
+TS_AUTH_BASE_URL = https:/$()/auth-stag.futurae.com
+TS_SERVICE_ID = 709fcb3e-be8c-418c-bab7-2d4d18a9253b
+TS_UNIT_ID = unit-42
+TS_CLIENT_ID = bd2c7028-ca68-4f53-bce6-c8372eacbf2f
+TS_CLIENT_SECRET = QbaWzU06hElMv6QvU32VGfogEiNdHz2QWbX8a2g5XUY4vGGWgEhCbJp0oWuVPxpQ

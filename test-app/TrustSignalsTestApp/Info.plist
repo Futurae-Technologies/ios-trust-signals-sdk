@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.futurae.trustsignals.refresh</string>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
@@ -15,11 +19,23 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>0.0.1</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>0.0.1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>TSBaseURL</key>
+	<string>$(TS_BASE_URL)</string>
+	<key>TSAuthBaseURL</key>
+	<string>$(TS_AUTH_BASE_URL)</string>
+	<key>TSServiceId</key>
+	<string>$(TS_SERVICE_ID)</string>
+	<key>TSUnitId</key>
+	<string>$(TS_UNIT_ID)</string>
+	<key>TSClientId</key>
+	<string>$(TS_CLIENT_ID)</string>
+	<key>TSClientSecret</key>
+	<string>$(TS_CLIENT_SECRET)</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>TrustSignalsTestApp scans for nearby Bluetooth peripherals to demonstrate the BluetoothScanCollector.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
@@ -89,10 +105,6 @@
 		<string>processing</string>
 		<string>bluetooth-central</string>
 		<string>remote-notification</string>
-	</array>
-	<key>BGTaskSchedulerPermittedIdentifiers</key>
-	<array>
-		<string>com.futurae.trustsignals.refresh</string>
 	</array>
 	<key>UILaunchScreen</key>
 	<dict/>

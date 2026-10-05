@@ -39,28 +39,32 @@ Then add `TrustSignals` to your target's dependencies.
 
 ### 1. Initialize
 
-Call `initialize` once on app launch:
+Call `initialize` once on app launch. The configuration says how the SDK behaves and
+carries no identifiers. `collectionUrl` is the full endpoint URL, path included:
 
 ```swift
 import TrustSignals
 
 await TrustSignalsSDK.initialize(
-    TSConfiguration(
-        serverURL: URL(string: "https://trustsignals.example.com")!,
-        appID: "your-app-id"
-    )
+    TSConfiguration(collectionUrl: URL(string: "https://trustsignals.example.com/api/v1/collections")!)
 )
 ```
 
 ### 2. Collect & Upload
 
-Collect device signals and upload them with an OAuth2 access token:
+Collect device signals and upload them. `TSCredentials` says who the data belongs to —
+one per account, replaced when its token changes:
 
 ```swift
-let collection = try await TrustSignalsSDK.collectAndUpload(
+let credentials = TSCredentials(
+    accountId: "user-account-id",
     accessToken: "your-oauth2-token",
-    accountID: "user-account-id"
+    serviceId: "3f7c1e2a-9b4d-4f80-a1c6-5d2e8b0f3a91", // tenant, a UUID
+    unitId: "your-app",                                 // this app within the tenant
+    interactionId: installationId,                      // your per-installation id
+    verificationStatus: .verified
 )
+let collection = try await TrustSignalsSDK.collectAndUpload(credentials)
 ```
 
 ### 3. Schedule Recurring Collections
@@ -69,9 +73,8 @@ Automatically collect and upload on a fixed interval (default: 30 minutes):
 
 ```swift
 await TrustSignalsSDK.scheduleCollections(
-    interval: .seconds(60),
-    accessToken: "your-oauth2-token",
-    accountID: "user-account-id"
+    collectionInterval: .seconds(60),
+    credentials: credentials
 )
 ```
 
@@ -98,21 +101,20 @@ caller — wrap them in `try`/`catch`. Errors from **scheduled** collections run
 in the background, so they are instead delivered to a registered handler:
 
 ```swift
-await TrustSignalsSDK.registerErrorHandler { accountID, error in
+await TrustSignalsSDK.registerErrorHandler { accountId, error in
     switch error {
-    case is TSAuthenticationError:
+    case TSError.authenticationFailed:
         // Access token expired/rejected (HTTP 401/403).
         // Obtain a fresh token from your backend, then re-schedule:
         //
         // await TrustSignalsSDK.scheduleCollections(
-        //     interval: .seconds(1800),
-        //     accessToken: newToken,
-        //     accountID: accountID
+        //     collectionInterval: .seconds(1800),
+        //     credentials: myCredentials(for: accountId, token: newToken)
         // )
         break
     default:
         // Log or report other errors (transport, non-2xx, timeout).
-        print("Collection failed for \(accountID): \(error)")
+        print("Collection failed for \(accountId): \(error)")
     }
 }
 ```
@@ -122,14 +124,14 @@ await TrustSignalsSDK.registerErrorHandler { accountID, error in
 
 #### Error behaviour summary
 
-| Error type | Retry | Where it surfaces |
+| Error | Retry | Where it surfaces |
 |---|---|---|
-| Transport failure — DNS/TLS/timeout (`TSError.submissionTransportFailed`) | No | Thrown from `collectAndUpload(...)`; delivered to handler when scheduled |
-| HTTP 401 / 403 (`TSAuthenticationError`) | No | Thrown from `collectAndUpload(...)`; delivered to handler when scheduled |
-| Other non-2xx HTTP (`TSError.submissionRejected`) | No | Thrown from `collectAndUpload(...)`; delivered to handler when scheduled |
+| Transport failure — DNS/TLS/timeout (`TSError.uploadTransportFailed`) | No | Thrown from `collectAndUpload(...)`; delivered to handler when scheduled |
+| HTTP 401 / 403 (`TSError.authenticationFailed`) | No — refresh the token | Thrown from `collectAndUpload(...)`; delivered to handler when scheduled |
+| Other non-2xx HTTP (`TSError.uploadRejected`) | No | Thrown from `collectAndUpload(...)`; delivered to handler when scheduled |
 | Collection timed out with no data (`TSError.collectionTimedOut`) | No | Thrown from `collect()` / `collectAndUpload(...)` |
 | Individual collector failed | No | Not surfaced — that one signal is omitted and the collection still completes (with `timedOut` flagged on partial timeouts) |
-| SDK used before `initialize(_:)` (`TSError.notStarted`) | No | Thrown from the called method |
+| SDK used before `initialize(_:)` or after `stopAll()` (`TSError.notInitialized`) | No | Thrown from the called method |
 
 The SDK performs **no automatic retries** and keeps **no offline queue** — each
 submission is a single attempt. A failed scheduled cycle is reported to the
@@ -137,8 +139,12 @@ handler and the schedule simply continues at the next interval.
 
 ### 7. Stop
 
+Stops all SDK activity and releases background resources (the pending
+`BGTaskScheduler` request, `collections` subscribers). Call `initialize` again to
+resume; to stop scheduling only, use `stopScheduledCollections()`.
+
 ```swift
-await TrustSignalsSDK.stop()
+await TrustSignalsSDK.stopAll()
 ```
 
 ## Permissions
@@ -152,7 +158,7 @@ The SDK collects signals from multiple sources. Some require permissions declare
 | WiFi Network | Location + Entitlement | `NSLocationWhenInUseUsageDescription` + Access WiFi Information capability |
 | Nearby Devices | Local Network | `NSLocalNetworkUsageDescription` + `NSBonjourServices` |
 
-Collectors that lack permission gracefully report `permission: false` without affecting other signals.
+Collectors that lack permission gracefully report `permissionGranted: false` without affecting other signals.
 
 ### Bonjour services
 
@@ -226,7 +232,7 @@ at init). To narrow the set, pass an explicit `bonjourServices:` array to
 
 A minimal SwiftUI test app is included in the `test-app/` directory. Open `test-app/TrustSignalsTestApp.xcodeproj` in Xcode, select a simulator or device, and run.
 
-The app lets you configure the SDK (App ID, tag), then exercise the main SDK flows from a single screen:
+The app lets you configure the SDK (service ID, unit ID, sensor tag), then exercise the main SDK flows from a single screen:
 
 - **Collect Now** — on-demand collection with no upload
 - **Collect & Upload** — one-shot collection and submission using an Account ID and OAuth2 access token
