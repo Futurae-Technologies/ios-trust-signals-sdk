@@ -48,7 +48,7 @@ struct CollectionsView: View {
                             ProgressView()
                         }
                     }
-                    CaptionedTextField("Interaction ID (UUID, per installation)", text: $store.interactionId, accessibilityIdentifier: "interactionid_input")
+                    CaptionedTextField("Interaction ID (per installation)", text: $store.interactionId, accessibilityIdentifier: "interactionid_input")
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                         .onSubmit { Task { await store.applySchedule() } }
@@ -296,6 +296,8 @@ private struct CollectionRow: View {
                 Stat(label: "Near", value: "\(collection.observation.nearbyDevices.count)",
                      granted: nil)
                 Stat(label: "Call", value: collection.observation.activeCall.map { $0 ? "yes" : "no" } ?? "—",
+                     granted: nil)
+                Stat(label: "Net", value: collection.observation.networkState.map { $0.vpnActive ? "\($0.networkType)+VPN" : $0.networkType } ?? "—",
                      granted: nil)
             }
             Text("id \(collection.collectionId.uuidString.prefix(8))…")

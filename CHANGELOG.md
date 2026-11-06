@@ -5,6 +5,26 @@ All notable changes to TrustSignals will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2026-11-06
+
+### Added
+- `TSObservation.networkState` is now collected and sent as `observation.networkState`. `networkType` is one of
+  `NONE` / `WIFI` / `CELLULAR` / `ETHERNET` / `OTHER`. `vpnActive` is best effort:
+  iOS has no public API for another app's VPN, so it is inferred from tunnel interfaces on the current network path.
+  `proxyHost` is the system HTTP proxy host, omitted when none is set. Needs no permission.
+- `TSError.invalidConfiguration(field:reason:)`, thrown when `initialize(_:)` refuses a configuration.
+
+### Changed
+- **BREAKING:** `initialize(_:)` is now `async throws` and validates `TSConfiguration`: `collectionUrl` must be an
+  `https` URL with a host (plain `http` was accepted before), and `sensorTag` must not be blank. An invalid
+  configuration is not applied: a stopped SDK stays stopped, a running SDK keeps its configuration. Call sites need `try`.
+- **BREAKING:** `accountId` must be 1–50 ASCII letters, digits or `-`; otherwise `invalidIdentifier(field: "accountId", reason:)`.
+  Previously only a blank value was rejected.
+
+### Fixed
+- `registerErrorHandler(_:)` is no longer called for on-demand `collectAndUpload` failures, which the caller already
+  receives (thrown error or `TSUploadOutcome.failures`). It now reports only uploads that fail in a scheduled or background cycle.
+
 ## [0.1.0-alpha] - 2026-10-05
 
 ### Added
@@ -20,12 +40,14 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `TrustSignalsSDK.registerBackgroundTasks(identifier:)` for running schedules in the background.
 - `timeout:` parameter on `collect` and `collectAndUpload` for a per-call collection budget.
 - `TSConfiguration.collectionReuseWindow` for reusing recent signals across scheduled accounts.
+- `TSLocation.accuracy` and `speed`.
+- `TSNetworkState` and `TSObservation.networkState`.
 - `TSError.noAccountsProvided`, `blankAccountId`, `missingAccessToken` and `invalidIdentifier(field:reason:)` for invalid input, thrown before collection starts.
 - On-demand uploads complete when the app moves to the background.
 
 ### Changed
 - **BREAKING:** `collectAndUpload` and `scheduleCollections` take `TSCredentials` instead of `accessToken:accountID:`.
-- **BREAKING:** `TSConfiguration.serverURL` → `collectionUrl` (full endpoint URL), `tag` → `sensorTag`.
+- **BREAKING:** `TSConfiguration.serverURL` → `collectionUrl`, now the full endpoint URL (e.g. `…/api/v1/collections`); the SDK no longer appends `/api/v1/observations`. `tag` → `sensorTag`.
 - **BREAKING:** `TrustSignalsSDK.stop()` → `stopAll()`.
 - **BREAKING:** `TSCollection.timestamp` / `TSDevice.timestamp` → `observationTime: Date`, `TSCollection.tag` → `sensorTag`, `TSLocationCollection` → `TSLocation`, `TSObservation.locationCollection` → `location`, `permission` → `permissionGranted`.
 - **BREAKING:** `TSAuthenticationError` → `TSError.authenticationFailed(statusCode:body:)`.

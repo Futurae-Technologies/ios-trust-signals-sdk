@@ -12,8 +12,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "TrustSignals",
-            url: "https://github.com/Futurae-Technologies/ios-trust-signals-sdk/releases/download/v0.1.0-alpha/TrustSignals-0.1.0-alpha.xcframework.zip",
-            checksum: "10925e81e50b9f10dab276a89a2440f31a06e1c1656a067df6dcde06c666781d"
+            url: "https://github.com/Futurae-Technologies/ios-trust-signals-sdk/releases/download/v1.0.0/TrustSignals-1.0.0.xcframework.zip",
+            checksum: "2c13715612300986123c071d609914c306c0af2df09a6a713c145d97255a703b"
         )
     ]
 )

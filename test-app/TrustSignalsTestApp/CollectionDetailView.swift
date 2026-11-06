@@ -1,15 +1,16 @@
+import Network
 import SwiftUI
 import TrustSignals
 
 struct CollectionDetailView: View {
     let collection: TSCollection
     var accountId: String = ""
-    /// The identity fields as this session has them, so the preview shows the body that
-    /// would actually go out.
     var serviceId: String = ""
     var unitId: String = ""
     var interactionId: String = ""
     var verificationStatus: TSVerificationStatus = .unverified
+
+    @State var networkDiagnostics: NetworkDiagnostics? = nil
 
     @Environment(\.dismiss) private var dismiss
 
@@ -82,6 +83,28 @@ struct CollectionDetailView: View {
                 }
             }
 
+            Section("observation.networkState") {
+                if let network = collection.observation.networkState {
+                    row("networkType", network.networkType)
+                    row("vpnActive", network.vpnActive ? "true" : "false")
+                    row("proxyHost", network.proxyHost ?? "—")
+                } else { empty("not collected — no network path reported") }
+            }
+
+            Section {
+                if let d = networkDiagnostics {
+                    row("path.status", d.pathStatus)
+                    row("usesInterfaceType", d.usesInterfaceType)
+                    row("availableInterfaces", d.availableInterfaces)
+                    row("HTTP proxy", d.httpProxy)
+                    row("PAC", d.pac)
+                } else { empty("reading…") }
+            } header: {
+                Text("networkState — raw inputs (live)")
+            } footer: {
+                Text("What the SDK's network heuristics see, read when this screen opened — not at collection time. Not uploaded. Use it to check networkType / vpnActive / proxyHost on a device. vpnActive is true when availableInterfaces lists a utun… or ipsec… interface.")
+            }
+
             Section("observation network/timezone") {
                 row("ip", collection.observation.ip ?? "—")
                 row("timezone", collection.observation.timezone)
@@ -150,6 +173,7 @@ struct CollectionDetailView: View {
                     .accessibilityIdentifier("raw_json_text")
             }
         }
+        .task { networkDiagnostics = await NetworkDiagnostics.read() }
         .navigationTitle(collection.observationTime
             .formatted(date: .omitted, time: .standard))
         .navigationBarBackButtonHidden(true)
@@ -282,6 +306,7 @@ private struct WireObservationPreview: Encodable {
     let nearbyDevices: [TSDevice]
     let location: TSLocation?
     let wifiNetwork: TSWifiNetwork?
+    let networkState: TSNetworkState?
     let ip: String?
     let timezone: String
     let activeCall: Bool
@@ -293,9 +318,53 @@ private struct WireObservationPreview: Encodable {
         self.nearbyDevices = observation.nearbyDevices
         self.location = observation.location
         self.wifiNetwork = observation.wifiNetwork
+        self.networkState = observation.networkState
         self.ip = observation.ip
         self.timezone = observation.timezone
         self.activeCall = observation.activeCall ?? false
         self.deviceInfoSignals = deviceInfoSignals
+    }
+}
+
+/// The raw inputs behind `TSNetworkState`, read the same way the SDK reads them.
+struct NetworkDiagnostics {
+    var pathStatus = "—"
+    var usesInterfaceType = "—"
+    var availableInterfaces = "—"
+    var httpProxy = "—"
+    var pac = "—"
+
+    static func read() async -> NetworkDiagnostics {
+        var d = NetworkDiagnostics()
+
+        if let settings = CFNetworkCopySystemProxySettings()?.takeRetainedValue() as? [String: Any] {
+            d.httpProxy = isOn(settings["HTTPEnable"])
+                ? "\(settings["HTTPProxy"] ?? "?"):\(settings["HTTPPort"] ?? "?")"
+                : "off"
+            d.pac = isOn(settings["ProxyAutoConfigEnable"])
+                ? (settings["ProxyAutoConfigURLString"] as? String ?? "on")
+                : "off"
+        }
+
+        let monitor = NWPathMonitor()
+        monitor.start(queue: .global(qos: .utility))
+        try? await Task.sleep(for: .milliseconds(300))
+        let path = monitor.currentPath
+        monitor.cancel()
+
+        d.pathStatus = "\(path.status)"
+        let types: [(String, NWInterface.InterfaceType)] = [
+            ("wifi", .wifi), ("cellular", .cellular), ("wiredEthernet", .wiredEthernet),
+            ("other", .other), ("loopback", .loopback)
+        ]
+        let used = types.filter { path.usesInterfaceType($0.1) }.map(\.0)
+        d.usesInterfaceType = used.isEmpty ? "none" : used.joined(separator: ", ")
+        let interfaces = path.availableInterfaces.map { "\($0.name):\($0.type)" }
+        d.availableInterfaces = interfaces.isEmpty ? "none" : interfaces.joined(separator: ", ")
+        return d
+    }
+
+    private static func isOn(_ value: Any?) -> Bool {
+        (value as? NSNumber)?.boolValue == true
     }
 }

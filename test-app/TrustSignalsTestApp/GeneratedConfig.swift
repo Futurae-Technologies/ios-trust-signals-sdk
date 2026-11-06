@@ -1,4 +1,5 @@
-// GeneratedConfig.swift — values injected via LocalConfig.xcconfig locally (gitignored),
+// GeneratedConfig.swift — values injected via LocalConfig.xcconfig locally (gitignored,
+// included optionally by TestApp.xcconfig),
 // or overwritten at build time by CI.
 import Foundation
 

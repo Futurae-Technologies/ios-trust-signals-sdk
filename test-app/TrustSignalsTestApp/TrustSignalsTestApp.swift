@@ -161,7 +161,12 @@ private struct LaunchView: View {
             sensorTag: sensorTag.trimmingCharacters(in: .whitespacesAndNewlines),
             reuseWindowSeconds: reuseWindowSeconds
         )
-        await TrustSignalsSDK.initialize(settings.configuration)
+        do {
+            try await TrustSignalsSDK.initialize(settings.configuration)
+        } catch {
+            self.error = error.localizedDescription
+            return
+        }
         onLaunched(settings)
     }
 

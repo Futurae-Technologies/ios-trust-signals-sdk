@@ -26,10 +26,7 @@ https://github.com/Futurae-Technologies/ios-trust-signals-sdk.git
 
 ```swift
 dependencies: [
-    // Pre-release versions require exact pinning:
-    .package(url: "https://github.com/Futurae-Technologies/ios-trust-signals-sdk.git", exact: "0.0.1-alpha")
-    // Stable releases can use range-based versioning:
-    // .package(url: "https://github.com/Futurae-Technologies/ios-trust-signals-sdk.git", from: "1.0.0")
+    .package(url: "https://github.com/Futurae-Technologies/ios-trust-signals-sdk.git", from: "1.0.0")
 ]
 ```
 
@@ -45,7 +42,7 @@ carries no identifiers. `collectionUrl` is the full endpoint URL, path included:
 ```swift
 import TrustSignals
 
-await TrustSignalsSDK.initialize(
+try await TrustSignalsSDK.initialize(
     TSConfiguration(collectionUrl: URL(string: "https://trustsignals.example.com/api/v1/collections")!)
 )
 ```

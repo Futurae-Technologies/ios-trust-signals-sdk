@@ -1,0 +1,4 @@
+// Base configuration of the test app. Local values (TS_BASE_URL, TS_CLIENT_ID, …) go in
+// LocalConfig.xcconfig next to this file — gitignored and optional: without it every
+// value is empty and the launch-screen fields start blank.
+#include? "LocalConfig.xcconfig"
